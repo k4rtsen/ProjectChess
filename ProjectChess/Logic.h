@@ -1,28 +1,22 @@
 #pragma once
+#include <vector>
 class Logic
 {
 private:
 	const static int SIZE = 8;
-	int players_checkers = 9, enemys_checkers = 9;
-	int field[SIZE][SIZE] = {
-		{2, 2, 2, 0, 0, 0, 0, 0},
-		{2, 2, 2, 0, 0, 0, 0, 0},
-		{2, 2, 2, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 1, 1, 1},
-		{0, 0, 0, 0, 0, 1, 1, 1},
-		{0, 0, 0, 0, 0, 1, 1, 1}
-	};
+	int players_checkers, enemys_checkers;
+	
 	bool checkWin = true;
 	bool checkLose = true;
 
 public:
-	//int getField();
+	Logic();
+	~Logic();
+	std::vector<std::vector<int>> field;
 	void decPlCheckers();
 	int getPlCheckers();
 	void decEnCheckers();
 	int getEnCheckers();
-	bool checkWin();
+	std::vector<std::vector<int>> getFreePlases(int x, int y);
 };
 
