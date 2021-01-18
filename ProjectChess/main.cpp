@@ -4,7 +4,7 @@
 using namespace sf;
 
 int main() {
-	RenderWindow window(VideoMode(500, 500), "miniChess", Style::None);
+	RenderWindow window(VideoMode(500, 500), "miniChess"/*, Style::None*/);
 
 	// Set Icon
 	Image icon;
@@ -51,11 +51,13 @@ int main() {
 						Event event1;
 						while (window.waitEvent(event1))
 							if (event1.type == Event::MouseButtonPressed)
-								if (event.mouseButton.button == Mouse::Left) {
-									int x1 = event.mouseButton.x;
-									int y1 = event.mouseButton.y;
+								if (event1.mouseButton.button == Mouse::Left) {
+									int x1 = event1.mouseButton.x;
+									int y1 = event1.mouseButton.y;
+									std::cout << "mouse x1: " << x1 << std::endl;
+									std::cout << "mouse y1: " << y1 << std::endl;
 									game.motion(x1, y1);
-									//break;
+									break;
 								}
 					}
 				}

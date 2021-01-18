@@ -18,7 +18,7 @@ protected:
 	sf::Texture rook_black;
 	std::vector<sf::Sprite> player;
 	std::vector<sf::Sprite> enemy;
-	int pre_x, pre_y;
+	int pre_x, pre_y, sel_index;
 public:
 	Game();
 	void Init(); // create new game
@@ -27,4 +27,3 @@ public:
 	void motion(int x, int y);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
-

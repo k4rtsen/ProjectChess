@@ -3,35 +3,19 @@
 //#include <SFML/Graphics.hpp>
 //using namespace sf;
 
-int getLogicalX(int &x, int& y, std::vector<sf::Sprite> &sprite) {
-	for (auto& var : sprite) {
-		int px = var.getPosition().x;
-		int py = var.getPosition().y;
-		if (px < x && x < px + CELL_SIZE && py < y && y < py + CELL_SIZE) {
-			int result = (px - CELL_SIZE) / CELL_SIZE;
-			return result;
-		}
-	}
+int getLogical(int& x) {
+	return (x - CELL_SIZE) / CELL_SIZE;
 }
 
-int getLogicalY(int& x, int& y, std::vector<sf::Sprite>& sprite) {
-	for (auto& var : sprite) {
-		int px = var.getPosition().x;
-		int py = var.getPosition().y;
-		if (px < x && x < px + CELL_SIZE && py < y && y < py + CELL_SIZE) {
-			int result = (py - CELL_SIZE) / CELL_SIZE;
-			return result;
-		}
-	}
-}
-
-std::vector<int> getMoveCell(int &x, int &y) {
-	for (int i = CELL_SIZE; i < FIELD_SIZE; i += 50)
-		for (int j = CELL_SIZE; j < FIELD_SIZE; j += 50) {
+std::vector<int> getMoveCellsIndex(int &x, int &y) {
+	for (int i = CELL_SIZE; i < FIELD_SIZE + CELL_SIZE; i += CELL_SIZE)
+		for (int j = CELL_SIZE; j < FIELD_SIZE + CELL_SIZE; j += CELL_SIZE) {
 			if (i < x && x < i + CELL_SIZE && j < y && y < j + CELL_SIZE) {
-				return {(i-CELL_SIZE)/CELL_SIZE, (j - CELL_SIZE) / CELL_SIZE };
+				return { (i - CELL_SIZE) / CELL_SIZE, (j - CELL_SIZE) / CELL_SIZE };
 			}
+			else continue;
 		}
+	return std::vector<int>();
 }
 
 Game::Game() {
@@ -43,14 +27,13 @@ Game::Game() {
 }
 
 void Game::Init() {
-	//clearing-------
-	if (!player.empty() && !enemy.empty()) {
+	if (!player.empty() || !enemy.empty()) {
 		player.clear();
 		enemy.clear();
 	}
-	this->pre_x = -1;
-	this->pre_y = -1;
-	//----------------
+	
+	logic.Init();//for new game
+
 	this->board.setTexture(grid);
 	this->board.setPosition(CELL_SIZE, CELL_SIZE);
 
@@ -83,12 +66,13 @@ void Game::setCheckers() {
 }
 
 bool Game::selectedCheckers(int x, int y) {
-	for (auto& sprite : player) {
-		int px = sprite.getPosition().x;
-		int py = sprite.getPosition().y;
-		if (px < this->pre_x && this->pre_x < px + CELL_SIZE && py < this->pre_y && this->pre_y < py + CELL_SIZE) {
-			this->pre_x = getLogicalX(x, y, player);
-			this->pre_y = getLogicalY(x, y, player);
+	for (int i = 0; i < logic.getPlCheckers(); i++) {
+		int px = this->player[i].getPosition().x;
+		int py = this->player[i].getPosition().y;
+		if (px < x && x < px + CELL_SIZE && py < y && y < py + CELL_SIZE) {
+			this->pre_x = getLogical(px);
+			this->pre_y = getLogical(py);
+			this->sel_index = i;
 			return true;
 		}
 		else continue;
@@ -97,12 +81,19 @@ bool Game::selectedCheckers(int x, int y) {
 }
 
 void Game::motion(int x, int y) {
-	if (this->pre_x != -1 && this->pre_y != -1) {
-		for (auto& freePlace : logic.getFreePlases(this->pre_x, this->pre_y)) {
-			if (freePlace == getMoveCell(x, y)) {
-
-			}
+	std::vector<int> temp = getMoveCellsIndex(x, y);
+	for (auto& freePlace : logic.getFreePlases(this->pre_x, this->pre_y)) {
+		if (temp.empty()) {
+			break;
 		}
+		else if (freePlace == temp) {
+			int new_x = temp[0];
+			int new_y = temp[1];
+			logic.shift(this->pre_x, this->pre_y, new_x, new_y);
+			player[sel_index].move((new_x - this->pre_x) * CELL_SIZE, (new_y - this->pre_y) * CELL_SIZE);
+			break;
+		}
+		else continue;
 	}
 }
 
