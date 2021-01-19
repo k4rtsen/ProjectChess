@@ -90,6 +90,7 @@ void Game::motion(int x, int y) {
 			int new_x = temp[0];
 			int new_y = temp[1];
 			logic.shift(this->pre_x, this->pre_y, new_x, new_y);
+			checkEnemy(new_x, new_y);
 			player[sel_index].move((new_x - this->pre_x) * CELL_SIZE, (new_y - this->pre_y) * CELL_SIZE);
 			break;
 		}
@@ -97,12 +98,54 @@ void Game::motion(int x, int y) {
 	}
 }
 
+void Game::checkEnemy(int &x, int &y) {
+	for (int i = 0; i < logic.getEnCheckers(); i++) {
+		int ex = this->enemy[i].getPosition().x;
+		int ey = this->enemy[i].getPosition().y;
+		if (ex < x && x < ex + CELL_SIZE && ey < y && y < ey + CELL_SIZE) {
+			enemy.erase(enemy.begin() + i);
+			break;
+		}
+		else continue;
+	}
+}
+
+bool Game::endGame() {
+	if (logic.getPlCheckers() == 1 && logic.getEnCheckers() == 1) {
+		sf::Text text("Endgame", font, 32);
+		this->finish = text;
+		this->finish.setFillColor(sf::Color::White);
+		this->finish.setPosition(200.f, 200.f);
+		return true;
+	}
+	else if (logic.getPlCheckers() == 0) {
+		sf::Text text("You lose", font, 32);
+		this->finish = text;
+		this->finish.setFillColor(sf::Color::White);
+		this->finish.setPosition(200.f, 200.f);
+		return true;
+	}
+	else if (logic.getPlCheckers() == 0) {
+		sf::Text text("You win", font, 32);
+		this->finish = text;
+		this->finish.setFillColor(sf::Color::White);
+		this->finish.setPosition(200.f, 200.f);
+		return true;
+	}
+	else return false;
+}
+
 void Game::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::Transform t;
 	states.transform *= t;
-	target.draw(this->board, states);
-	for (auto &var : this->enemy)
-		target.draw(var, states);
-	for (auto& var : this->player)
-		target.draw(var, states);
+	//if (!endGame()) {
+		target.draw(this->board, states);
+		for (auto& var : this->enemy)
+			target.draw(var, states);
+		for (auto& var : this->player)
+			target.draw(var, states);
+	/*}
+	else {
+		target.draw(this->finish, states);
+	}*/
 };

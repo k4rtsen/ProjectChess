@@ -12,6 +12,7 @@ class Game : public sf::Drawable, public sf::Transformable
 protected:
 	Logic logic;
 	sf::Font font;
+	sf::Text finish;
 	sf::Texture grid;
 	sf::Sprite board;
 	sf::Texture rook_white;
@@ -19,11 +20,15 @@ protected:
 	std::vector<sf::Sprite> player;
 	std::vector<sf::Sprite> enemy;
 	int pre_x, pre_y, sel_index;
+	void setCheckers();
+	void checkEnemy(int &x, int &y);
+
 public:
 	Game();
 	void Init(); // create new game
-	void setCheckers();
 	bool selectedCheckers(int x, int y);
 	void motion(int x, int y);
+	bool endGame();
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawFinish(sf::RenderTarget& target, sf::RenderStates states) const;
 };

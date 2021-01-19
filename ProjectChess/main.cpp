@@ -24,23 +24,22 @@ int main() {
 
 	while (window.isOpen()) {
 		Event event;
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+			case Event::Closed:
+				window.close();
+				break;
 
-        while (window.pollEvent(event))
-        {
-            switch (event.type)
-            {
-            case Event::Closed:
-                window.close();
-                break;
-
-            case Event::KeyPressed:
+			case Event::KeyPressed:
 				if (event.key.code == Keyboard::Escape) {
 					window.close();
 				}
 				else if (event.key.code == Keyboard::F1) {
 					game.Init();
 				}
-                break;
+				break;
 			case Event::MouseButtonPressed:
 				if (event.mouseButton.button == Mouse::Left) {
 					std::cout << "mouse x: " << event.mouseButton.x << std::endl;
@@ -57,15 +56,16 @@ int main() {
 									std::cout << "mouse x1: " << x1 << std::endl;
 									std::cout << "mouse y1: " << y1 << std::endl;
 									game.motion(x1, y1);
+									// enemy turn
 									break;
 								}
 					}
 				}
 				break;
-            default:
-                break;
-            }
-        }
+			default:
+				break;
+			}
+		}
 
 		window.clear(Color(5, 5, 50));
 		window.draw(text);
